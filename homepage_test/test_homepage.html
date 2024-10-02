@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간단한 웹사이트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .container {
+            display: inline-block;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #000;
+            background-color: #f0f0f0;
+            width: 300px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+        }
+        .button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>간단한 연산 및 위치 정보 웹사이트</h1>
+    <!-- 사진 -->
+    <img src="C:\jsbackend\test\saltbread_1.png" alt="Sample Image">
+
+    <!-- 리디렉션 버튼 -->
+    <div class="button">
+        <button onclick="redirect()">길 건너 친구들로 리디렉션</button>
+    </div>
+
+    <!-- 연산 입력 및 결과 -->
+    <div>
+        <input type="number" id="number1" placeholder="숫자 1 입력">
+        <input type="number" id="number2" placeholder="숫자 2 입력">
+        <button onclick="calculateSum()">덧셈</button>
+    </div>
+
+    <!-- 결과 박스 -->
+    <div class="result-box" id="resultBox">
+        결과가 여기에 표시됩니다.
+    </div>
+
+    <!-- 위치 정보 출력 박스 -->
+    <div class="result-box" id="locationBox">
+        위치 정보를 불러오는 중...
+    </div>
+</div>
+
+<script>
+    // Redirection
+    function redirect() {
+        window.location.href = "https://play.google.com/store/apps/details?id=com.yodo1.crossyroad&pcampaignid=merch_published_cluster_promotion_battlestar_browse_all_games&hl=ko";
+    }
+
+    // Calculate
+    function calculateSum() {
+        const number1 = parseFloat(document.getElementById('number1').value);
+        const number2 = parseFloat(document.getElementById('number2').value);
+        
+        if (!isNaN(number1) && !isNaN(number2)) {
+            const sum = number1 + number2;
+            document.getElementById('resultBox').innerText = '결과: ' + sum;
+        } else {
+            document.getElementById('resultBox').innerText = '유효한 숫자를 입력하세요.';
+        }
+    }
+
+    // IP 기반으로 위치 정보를 불러오는 함수
+    function fetchLocation() {
+        // ipapi를 사용한 IP 기반 위치 조회
+        fetch('https://ipapi.co/json/')
+        .then(response => response.json())
+        .then(data => {
+            const locationInfo = `${data.city}, ${data.region}, ${data.country_name}`;
+            document.getElementById('locationBox').innerText = `현재 위치: ${locationInfo}`;
+        })
+        .catch(error => {
+            document.getElementById('locationBox').innerText = '위치 정보를 불러올 수 없습니다.';
+            console.error('Error fetching location:', error);
+        });
+    }
+
+    // 페이지가 로드될 때 위치 정보를 가져옵니다.
+    window.onload = function() {
+        fetchLocation();
+    };
+</script>
+
+</body>
+</html>
