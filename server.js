@@ -6,23 +6,26 @@ require('dotenv').config(); // .env 파일에서 환경 변수 로드
 const app = express();
 const port = 3000;
 
-// 정적 파일 서비스 설정 (HTML, JS, CSS 파일 등)
+// 환경 변수에서 API 키와 토큰 가져오기
+const OPENWEATHERMAP_API_KEY = process.env.OPENWEATHERMAP_API_KEY;
+const IPINFO_TOKEN = process.env.IPINFO_TOKEN;
+
+// 정적 파일 서비스 설정
 app.use(express.static(path.join(__dirname, 'homepage_test')));
 
-// 기본 라우트 설정
-// 접속자의 IP를 바탕으로 위치 및 기상 정보를 가져오는 라우트
-app.get('/', async (req, res) => {
+// /weather 엔드포인트 설정
+app.get('/weather', async (req, res) => {
     try {
-        // 클라이언트의 IP 주소 추출 (프록시 환경에서도 제대로 동작하도록 설정)
-        let clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // 클라이언트로부터 IP 주소 받기
+        let clientIP = req.query.ip;
 
-        if (clientIP === '::1' || clientIP === '127.0.0.1') {
-            clientIP = '8.8.8.8'; // 로컬 테스트를 위한 IP 주소
+        if (!clientIP) {
+            throw new Error('IP 주소가 제공되지 않았습니다.');
         }
 
         // IP 정보 요청 (ipinfo.io API 사용)
-        const ipInfoUrl = `https://ipinfo.io/${clientIP}/json?token=91a7e3dadef147`;
-        console.log('API 호출 URL', ipInfoUrl);
+        const ipInfoUrl = `https://ipinfo.io/${clientIP}/json?token=${IPINFO_TOKEN}`;
+        console.log('IP 정보 API 호출 URL:', ipInfoUrl);
         const ipInfoResponse = await axios.get(ipInfoUrl);
         const locationData = ipInfoResponse.data;
 
@@ -34,8 +37,8 @@ app.get('/', async (req, res) => {
         const [latitude, longitude] = locationData.loc.split(',');
 
         // 기상 정보 요청 (OpenWeatherMap API 사용)
-        const weatherApiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=34ca17f9b51486bfaeaf8d66c7fde8fd&units=metric`;
-        console.log('API 호출 URL:', weatherApiUrl);
+        const weatherApiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${OPENWEATHERMAP_API_KEY}&units=metric&lang=kr`;
+        console.log('날씨 API 호출 URL:', weatherApiUrl);
         const weatherResponse = await axios.get(weatherApiUrl);
         const weatherData = weatherResponse.data;
 
@@ -53,7 +56,7 @@ app.get('/', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data:', error.message);
         res.status(500).json({ error: '정보를 가져오는 데 실패했습니다.' });
     }
 });
