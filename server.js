@@ -6,8 +6,9 @@ require('dotenv').config(); // .env 파일에서 환경 변수 로드
 const app = express();
 const port = 3000;
 
-// 정적 파일 서비스 설정 (HTML, JS, CSS 파일 등)
-app.use(express.static(path.join(__dirname, 'homepage_test')));
+// 정적 파일 서비스 설정
+app.use(express.static(path.join(__dirname, 'public')));  // Tailwind CSS 파일이 포함된 폴더
+app.use(express.static(path.join(__dirname, 'modules')));
 
 // 기본 라우트 설정
 // 접속자의 IP를 바탕으로 위치 및 기상 정보를 가져오는 라우트
@@ -30,7 +31,6 @@ app.get('/', async (req, res) => {
             throw new Error('위치 정보가 없습니다.');
         }
 
-        // 위치 정보에서 위도와 경도 추출
         const [latitude, longitude] = locationData.loc.split(',');
 
         // 기상 정보 요청 (OpenWeatherMap API 사용)
