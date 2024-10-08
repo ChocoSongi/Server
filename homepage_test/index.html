@@ -69,9 +69,9 @@
 
             weatherInfoDiv.innerHTML = `
                 <h2>${location}, ${country}</h2>
-                <p>기온: ${data.main.temp}°C</p>
-                <p>날씨: ${data.weather[0].description}</p>
                 <p>습도: ${data.main.humidity}%</p>
+                <p>기온: ${data.main.temp}°C</p>
+                <!--<p>날씨: ${data.weather[0].description}</p>--> <!-- 발효에 필요할 정보는 아닌 것 같지만 혹시라도 쓸 지 모르니 주석처리만 해놓고 남겨둠 -->
             `;
         }
     </script>
